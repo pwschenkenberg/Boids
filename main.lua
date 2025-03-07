@@ -1,8 +1,12 @@
+require("boids")
+
 function love.load()
 	Boids = createBoids(100)
 end
 
-function love.update()
+function love.update(dt)
+	turnBoids(dt)
+	moveBoids(dt)
 end
 
 function love.draw()
@@ -13,33 +17,5 @@ function love.draw()
 	end
 end
 
-function createBoids(qty)
-	math.randomseed(os.time())
-	local boids = {}
-	local winWidth, winHeight = love.window.getMode()
 
-	for i=1,qty do
-		local newBoid = {
-			x = math.random(10,winWidth-10),
-			y = math.random(10,winHeight-10),
-			angle = math.random() * 2 * math.pi,
-			velocity = 100,
-			range = 200 }
 
-		table.insert(boids,newBoid)
-	end
-
-	return boids
-end
-
-function turnBoids()
-	for i,v in ipairs(Boids) do
-		--turn towards average angle of nearby boids
-	end
-end
-
-function moveBoids()
-	for i,v in ipairs(Boids) do
-		--update x, y based on angle and speed
-		
-	end
