@@ -12,7 +12,7 @@ function createBoids(qty)
 			y = math.random(10,winHeight-10),
 
 			--velocity
-			vmax = 100,
+			vmax = 250,
 			vx = math.random(-50, 50),
 			vy = math.random(-50, 50),
 
@@ -21,13 +21,14 @@ function createBoids(qty)
 			ay = 0,
 
 			--range of sight
-			range = 300,
-			avoidRange = 40,
+			range = 60,
+			avoidRange = 30,
 
 			--force multipliers
-			forceFlock = 1,
-			forceAngle = 1,
-			forceAvoid = 1 }
+			forceFlock = .2,
+			forceAngle = .02,
+			forceAvoid = 1,
+			forceRandom = 0 }
 
 		table.insert(boids,newBoid)
 	end
@@ -78,11 +79,52 @@ function applyForces()
 			end
 		end
 
-		--update forces from flocking
+		--avoid walls
+		if current_boid.x < 4 then
+			current_boid.ax = current_boid.ax + 100
+		elseif current_boid.x > (winWidth - 4) then
+			current_boid.ax = current_boid.ax - 100
+		end
+
+		if current_boid.y < 4 then
+			current_boid.ay = current_boid.ay + 100
+		elseif current_boid.y > (winHeight - 4) then
+			current_boid.ay = current_boid.ay - 100
+		end
+
+		--pull towards center of nearby boids
+		flockCenterX = flockCenterX / flockCount
+		flockCenterY = flockCenterY / flockCount
+
+		current_boid.ax = current_boid.ax + ((flockCenterX - current_boid.x) * current_boid.forceFlock)
+		current_boid.ay = current_boid.ay + ((flockCenterY - current_boid.y) * current_boid.forceFlock)
+
+		--match angle of nearby boids
+		flockVx = flockVx / flockCount
+		flockVy = flockVy / flockCount
+
+		current_boid.ax = current_boid.ax + (flockVx * current_boid.forceAngle)
+		current_boid.ay = current_boid.ay + (flockVy * current_boid.forceAngle)	
+
+--[[
+		--add random force
+		current_boid.forceRandom = current_boid.forceRandom + math.random(-.01,.01)
+		current_boid.ax = current_boid.ax + (current_boid.forceRandom * math.random(-1,1))
+		current_boid.ay = current_boid.ay + (current_boid.forceRandom * math.random(-1,1))
+]]	
 
 		--update velocity based on acceleration
-		current_boid.vx = math.min(current_boid.vx + current_boid.ax,current_boid.vmax)
-		current_boid.vy = math.min(current_boid.vy + current_boid.ay,current_boid.vmax)
+		current_boid.vx = current_boid.vx + current_boid.ax
+		current_boid.vy = current_boid.vy + current_boid.ay
+
+		local bAngle = math.atan2(current_boid.vy, current_boid.vx)
+		local bVec = math.sqrt(current_boid.vx^2 + current_boid.vy^2)
+
+		if bVec > current_boid.vmax then
+			current_boid.vx = current_boid.vx * current_boid.vmax / bVec
+			current_boid.vy = current_boid.vy * current_boid.vmax / bVec
+		end
+
 	end
 end
 
