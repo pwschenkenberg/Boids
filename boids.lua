@@ -119,7 +119,7 @@ function applyForces()
 		current_boid.vx = current_boid.vx + current_boid.ax
 		current_boid.vy = current_boid.vy + current_boid.ay
 
-		local bAngle = math.atan2(current_boid.vy, current_boid.vx)
+		--local bAngle = math.atan2(current_boid.vy, current_boid.vx)
 		local bVec = math.sqrt(current_boid.vx^2 + current_boid.vy^2)
 
 		if bVec > current_boid.vmax then
