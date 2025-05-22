@@ -1,7 +1,7 @@
 require("boids")
 
 function love.load()
-	love.window.setMode(1200,800)
+	love.window.setMode(1600,1000)
 	Boids = createBoids(500)
 end
 

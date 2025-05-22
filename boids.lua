@@ -80,16 +80,18 @@ function applyForces()
 		end
 
 		--avoid walls
-		if current_boid.x < 4 then
-			current_boid.ax = current_boid.ax + 100
-		elseif current_boid.x > (winWidth - 4) then
-			current_boid.ax = current_boid.ax - 100
+		local wallDistance = 75
+		local wallForce = 0.3
+		if current_boid.x < wallDistance then
+			current_boid.ax = current_boid.ax + (wallDistance - current_boid.x) * wallForce
+		elseif current_boid.x > (winWidth - wallDistance) then
+			current_boid.ax = current_boid.ax - (wallDistance - (winWidth - current_boid.x)) * wallForce
 		end
 
-		if current_boid.y < 4 then
-			current_boid.ay = current_boid.ay + 100
-		elseif current_boid.y > (winHeight - 4) then
-			current_boid.ay = current_boid.ay - 100
+		if current_boid.y < wallDistance then
+			current_boid.ay = current_boid.ay + (wallDistance - current_boid.y) * wallForce
+		elseif current_boid.y > (winHeight - wallDistance) then
+			current_boid.ay = current_boid.ay - (wallDistance - (winHeight - current_boid.y)) * wallForce
 		end
 
 		--pull towards center of nearby boids
