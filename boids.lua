@@ -21,7 +21,7 @@ function createBoids(qty)
 			ay = 0,
 
 			--range of sight
-			range = 60,
+			range = 50,
 			avoidRange = 30,
 
 			--force multipliers
@@ -134,8 +134,17 @@ end
 function moveBoids(dt)
 	for i,v in ipairs(Boids) do
 		--update x, y based on speed
-		v.x = (v.x + v.vx * dt) % winWidth
-		v.y = (v.y + v.vy * dt) % winHeight
+		v.x = v.x + v.vx * dt
+		v.y = v.y + v.vy * dt
+
+		if v.x < 0 or v.x > winWidth then
+			v.x = winWidth / 2
+		end
+
+		if v.y < 0 or v.y > winHeight then
+			v.y = winHeight / 2
+		end
+
 	end
 end
 
