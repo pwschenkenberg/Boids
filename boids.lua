@@ -80,8 +80,8 @@ function applyForces()
 		end
 
 		--avoid walls
-		local wallDistance = 75
-		local wallForce = 0.3
+		local wallDistance = 150
+		local wallForce = .12
 		if current_boid.x < wallDistance then
 			current_boid.ax = current_boid.ax + (wallDistance - current_boid.x) * wallForce
 		elseif current_boid.x > (winWidth - wallDistance) then
