@@ -8,11 +8,11 @@ function createBoids(qty)
 		local newBoid = {
 
 			--position
-			x = math.random(10,winWidth-10),
-			y = math.random(10,winHeight-10),
+			x = 100, --math.random(10,winWidth-10),
+			y = 100, --math.random(10,winHeight-10),
 
 			--velocity
-			vmax = 250,
+			vmax = math.random(100,300),
 			vx = math.random(-50, 50),
 			vy = math.random(-50, 50),
 
@@ -28,7 +28,8 @@ function createBoids(qty)
 			forceFlock = .2,
 			forceAngle = .02,
 			forceAvoid = 1,
-			forceRandom = 0 }
+			forceRandom = 0,
+			forceDamping = 1 }
 
 		table.insert(boids,newBoid)
 	end
@@ -40,6 +41,15 @@ function distance(b1,b2)
 	return math.sqrt((b2.x-b1.x)^2 + (b2.y-b1.y)^2)
 end
 
+function canSee(b1,b2)
+	--get vision angle and angle to target
+	local angle = math.atan2(b1.vy, b1.vx)
+	local angleToTarget = math.atan2(b2.y-b1.y,b2.x-b1.x)
+
+	--compare angles and return whether angles are close
+	return math.abs(angle - angleToTarget) < math.pi
+end
+
 function sign(n)
 	return n < 0 and -1 or n > 0 and 1 or 0
 end
@@ -49,6 +59,8 @@ function applyForces()
 
 		--reset acceleration
 		current_boid.ax, current_boid.ay = 0, 0
+
+
 
 		--Need center of nearby boids
 		local flockCenterX, flockCenterY = 0, 0
@@ -62,7 +74,7 @@ function applyForces()
 			--check nearby boids, ignoring self
 			local boidDistance = distance(current_boid, target_boid)
 
-			if current_boid == target_boid then elseif boidDistance < current_boid.range then
+			if current_boid == target_boid then elseif boidDistance < current_boid.range then --and canSee(current_boid,target_boid) then
 				--update running total of locations and angles
 				flockCount = flockCount + 1
 				flockCenterX = flockCenterX + target_boid.x
@@ -80,7 +92,7 @@ function applyForces()
 		end
 
 		--avoid walls
-		local wallDistance = 150
+--[[		local wallDistance = 150
 		local wallForce = .12
 		if current_boid.x < wallDistance then
 			current_boid.ax = current_boid.ax + (wallDistance - current_boid.x) * wallForce
@@ -92,7 +104,7 @@ function applyForces()
 			current_boid.ay = current_boid.ay + (wallDistance - current_boid.y) * wallForce
 		elseif current_boid.y > (winHeight - wallDistance) then
 			current_boid.ay = current_boid.ay - (wallDistance - (winHeight - current_boid.y)) * wallForce
-		end
+		end]]
 
 		--pull towards center of nearby boids
 		flockCenterX = flockCenterX / flockCount
@@ -116,12 +128,13 @@ function applyForces()
 ]]	
 
 		--update velocity based on acceleration
-		current_boid.vx = current_boid.vx + current_boid.ax
-		current_boid.vy = current_boid.vy + current_boid.ay
+		current_boid.vx = (current_boid.vx + current_boid.ax) * current_boid.forceDamping
+		current_boid.vy = (current_boid.vy + current_boid.ay) * current_boid.forceDamping
 
 		--local bAngle = math.atan2(current_boid.vy, current_boid.vx)
 		local bVec = math.sqrt(current_boid.vx^2 + current_boid.vy^2)
 
+		--limit velocity if needed according to boid.vmax
 		if bVec > current_boid.vmax then
 			current_boid.vx = current_boid.vx * current_boid.vmax / bVec
 			current_boid.vy = current_boid.vy * current_boid.vmax / bVec
@@ -134,15 +147,16 @@ end
 function moveBoids(dt)
 	for i,v in ipairs(Boids) do
 		--update x, y based on speed
-		v.x = v.x + v.vx * dt
-		v.y = v.y + v.vy * dt
+		v.x = (v.x + v.vx * dt) % winWidth
+		v.y = (v.y + v.vy * dt) % winHeight
 
-		if v.x < 0 or v.x > winWidth then
-			v.x = winWidth / 2
-		end
-
-		if v.y < 0 or v.y > winHeight then
-			v.y = winHeight / 2
+		if v.x ~= v.x then
+			v.x = 0
+			v.y = 0
+			v.vx = 0
+			v.vy = 0
+			v.ax = 0
+			v.ay = 0
 		end
 
 	end
