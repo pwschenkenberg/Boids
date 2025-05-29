@@ -8,11 +8,11 @@ function createBoids(qty)
 		local newBoid = {
 
 			--position
-			x = 100, --math.random(10,winWidth-10),
-			y = 100, --math.random(10,winHeight-10),
+			x = math.random(10,winWidth-10),
+			y = math.random(10,winHeight-10),
 
 			--velocity
-			vmax = math.random(100,300),
+			vmax = math.random(30,100),
 			vx = math.random(-50, 50),
 			vy = math.random(-50, 50),
 
@@ -25,9 +25,9 @@ function createBoids(qty)
 			avoidRange = 30,
 
 			--force multipliers
-			forceFlock = .2,
+			forceFlock = .02,
 			forceAngle = .02,
-			forceAvoid = 1,
+			forceAvoid = .1,
 			forceRandom = 0,
 			forceDamping = 1 }
 
@@ -151,10 +151,10 @@ function moveBoids(dt)
 		v.y = (v.y + v.vy * dt) % winHeight
 
 		if v.x ~= v.x then
-			v.x = 0
-			v.y = 0
-			v.vx = 0
-			v.vy = 0
+			v.x = 200
+			v.y = 200
+			v.vx = 10
+			v.vy = 10
 			v.ax = 0
 			v.ay = 0
 		end
