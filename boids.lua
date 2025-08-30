@@ -1,3 +1,4 @@
+require("boidPhysics")
 
 function createBoids(qty)
 	math.randomseed(os.time())
@@ -8,17 +9,14 @@ function createBoids(qty)
 		local newBoid = {
 
 			--position
-			x = math.random(10,winWidth-10),
-			y = math.random(10,winHeight-10),
+			pos = {math.random(10,winWidth-10), math.random(10,winHeight-10)},
 
 			--velocity
 			vmax = math.random(30,100),
-			vx = math.random(-50, 50),
-			vy = math.random(-50, 50),
+			vel = {math.random(-50, 50), math.random(-50, 50),}
 
 			--acceleration
-			ax = 0,
-			ay = 0,
+			accel = {0, 0},
 
 			--range of sight
 			range = 50,
@@ -35,10 +33,6 @@ function createBoids(qty)
 	end
 
 	return boids
-end
-
-function distance(b1,b2)
-	return math.sqrt((b2.x-b1.x)^2 + (b2.y-b1.y)^2)
 end
 
 function canSee(b1,b2)
@@ -104,7 +98,8 @@ function applyForces()
 			current_boid.ay = current_boid.ay + (wallDistance - current_boid.y) * wallForce
 		elseif current_boid.y > (winHeight - wallDistance) then
 			current_boid.ay = current_boid.ay - (wallDistance - (winHeight - current_boid.y)) * wallForce
-		end]]
+		end
+]]
 
 		--pull towards center of nearby boids
 		flockCenterX = flockCenterX / flockCount
@@ -131,14 +126,9 @@ function applyForces()
 		current_boid.vx = (current_boid.vx + current_boid.ax) * current_boid.forceDamping
 		current_boid.vy = (current_boid.vy + current_boid.ay) * current_boid.forceDamping
 
-		--local bAngle = math.atan2(current_boid.vy, current_boid.vx)
-		local bVec = math.sqrt(current_boid.vx^2 + current_boid.vy^2)
 
 		--limit velocity if needed according to boid.vmax
-		if bVec > current_boid.vmax then
-			current_boid.vx = current_boid.vx * current_boid.vmax / bVec
-			current_boid.vy = current_boid.vy * current_boid.vmax / bVec
-		end
+		current_boid.vel = limitLength(current_boid.vel,current_boid.vmax)
 
 	end
 end
